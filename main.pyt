@@ -8,6 +8,7 @@ folder_path = input("Enter folder path: ")
 
 if not os.path.exists(folder_path):
     print("Folder does not exist!")
+
 else:
 
     image_count = 0
@@ -23,17 +24,22 @@ else:
 
             file_path = os.path.join(root, file)
 
-            total_size += os.path.getsize(file_path)
+            # Get file size safely
+            try:
+                total_size += os.path.getsize(file_path)
+            except (FileNotFoundError, PermissionError):
+                continue
 
             extension = os.path.splitext(file)[1].lower()
 
-            if extension in [".jpg", ".jpeg", ".png", ".gif"]:
+            # Classify files
+            if extension in [".jpg", ".jpeg", ".png", ".gif", ".avif", ".webp"]:
                 image_count += 1
 
-            elif extension in [".mp4", ".mkv", ".avi", ".mov"]:
+            elif extension in [".mp4", ".mkv", ".avi", ".mov", ".webm"]:
                 video_count += 1
 
-            elif extension in [".pdf", ".docx", ".txt", ".pptx", ".xlsx"]:
+            elif extension in [".pdf", ".docx", ".txt", ".pptx", ".xlsx", ".csv"]:
                 document_count += 1
 
             elif extension == ".py":
@@ -62,3 +68,7 @@ else:
     total_size_mb = total_size / (1024 * 1024)
 
     print("Total size:", round(total_size_mb, 2), "MB")
+
+    print("\n==============================")
+    print("       SCAN COMPLETED")
+    print("==============================")
