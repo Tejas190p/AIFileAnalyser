@@ -1,5 +1,6 @@
 import os
 import hashlib
+from datetime import datetime, timedelta
 
 print("==============================")
 print("      AI FILE DETECTIVE")
@@ -26,6 +27,13 @@ else:
     duplicate_count = 0
     duplicate_size = 0
 
+    # Day 3: Store large and old files
+    largest_files = []
+    old_files = []
+
+    # 30 days ago
+    old_file_date = datetime.now() - timedelta(days=30)
+
     # ------------------------------
     # STEP 1: SCAN ALL FILES
     # ------------------------------
@@ -40,6 +48,8 @@ else:
 
             try:
                 file_size = os.path.getsize(file_path)
+                modified_time = os.path.getmtime(file_path)
+
             except (FileNotFoundError, PermissionError):
                 continue
 
@@ -69,6 +79,23 @@ else:
 
             file_sizes[file_size].append(file_path)
 
+            # ------------------------------
+            # DAY 3: LARGE FILES
+            # ------------------------------
+
+            largest_files.append((file_size, file_path))
+
+            # ------------------------------
+            # DAY 3: OLD FILES
+            # ------------------------------
+
+            modified_date = datetime.fromtimestamp(modified_time)
+
+            if modified_date < old_file_date:
+                old_files.append(
+                    (modified_date, file_size, file_path)
+                )
+
     # ------------------------------
     # STEP 2: FIND POSSIBLE DUPLICATES
     # ------------------------------
@@ -77,8 +104,6 @@ else:
 
     for file_size, files in file_sizes.items():
 
-        # If only one file has this size,
-        # it cannot be a duplicate of another file.
         if len(files) < 2:
             continue
 
@@ -136,6 +161,12 @@ else:
                 hashes[file_hash] = file_path
 
     # ------------------------------
+    # DAY 3: SORT FILES
+    # ------------------------------
+
+    largest_files.sort(reverse=True)
+
+    # ------------------------------
     # FINAL RESULTS
     # ------------------------------
 
@@ -175,6 +206,48 @@ else:
         round(duplicate_size_mb, 2),
         "MB"
     )
+
+    # ------------------------------
+    # DAY 3: TOP 10 LARGEST FILES
+    # ------------------------------
+
+    print("\n==============================")
+    print("       TOP 10 LARGEST FILES")
+    print("==============================")
+
+    for size, path in largest_files[:10]:
+
+        print("\nFile:", os.path.basename(path))
+        print(
+            "Size:",
+            round(size / (1024 * 1024), 2),
+            "MB"
+        )
+        print("Path:", path)
+
+    # ------------------------------
+    # DAY 3: OLD FILES
+    # ------------------------------
+
+    print("\n==============================")
+    print("       OLD FILES (30+ DAYS)")
+    print("==============================")
+
+    print("Old files found:", len(old_files))
+
+    for modified_date, size, path in old_files[:10]:
+
+        print("\nFile:", os.path.basename(path))
+        print(
+            "Last modified:",
+            modified_date.strftime("%Y-%m-%d")
+        )
+        print(
+            "Size:",
+            round(size / (1024 * 1024), 2),
+            "MB"
+        )
+        print("Path:", path)
 
     print("\n==============================")
     print("       SCAN COMPLETED")
