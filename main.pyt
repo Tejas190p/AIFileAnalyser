@@ -19,6 +19,12 @@ else:
     python_count = 0
     other_count = 0
 
+    image_size = 0
+    video_size = 0
+    document_size = 0
+    python_size = 0
+    other_size = 0
+
     total_size = 0
 
     # Store files grouped by their size
@@ -27,14 +33,11 @@ else:
     duplicate_count = 0
     duplicate_size = 0
 
-    # ------------------------------
-    # DAY 3: LARGE AND OLD FILES
-    # ------------------------------
-
+    # Day 3: Large and old files
     largest_files = []
     old_files = []
 
-    # Files older than 30 days
+    # 30 days ago
     old_file_date = datetime.now() - timedelta(days=30)
 
     # ------------------------------
@@ -60,30 +63,38 @@ else:
 
             extension = os.path.splitext(file)[1].lower()
 
-            # Classify files
+            # ------------------------------
+            # CLASSIFY FILES
+            # ------------------------------
+
             if extension in [
                 ".jpg", ".jpeg", ".png",
                 ".gif", ".avif", ".webp"
             ]:
                 image_count += 1
+                image_size += file_size
 
             elif extension in [
                 ".mp4", ".mkv", ".avi",
                 ".mov", ".webm"
             ]:
                 video_count += 1
+                video_size += file_size
 
             elif extension in [
                 ".pdf", ".docx", ".txt",
                 ".pptx", ".xlsx", ".csv"
             ]:
                 document_count += 1
+                document_size += file_size
 
             elif extension == ".py":
                 python_count += 1
+                python_size += file_size
 
             else:
                 other_count += 1
+                other_size += file_size
 
             # ------------------------------
             # STORE FILE BY SIZE
@@ -95,7 +106,7 @@ else:
             file_sizes[file_size].append(file_path)
 
             # ------------------------------
-            # DAY 3: STORE LARGE FILES
+            # DAY 3: LARGE FILES
             # ------------------------------
 
             largest_files.append(
@@ -103,7 +114,7 @@ else:
             )
 
             # ------------------------------
-            # DAY 3: CHECK OLD FILES
+            # DAY 3: OLD FILES
             # ------------------------------
 
             modified_date = datetime.fromtimestamp(
@@ -166,9 +177,15 @@ else:
 
                 print("\nDUPLICATE FOUND!")
 
-                print("Original:", hashes[file_hash])
+                print(
+                    "Original:",
+                    hashes[file_hash]
+                )
 
-                print("Duplicate:", file_path)
+                print(
+                    "Duplicate:",
+                    file_path
+                )
 
                 print(
                     "Size:",
@@ -194,7 +211,7 @@ else:
     old_files.sort()
 
     # ------------------------------
-    # FINAL RESULTS
+    # FINAL CALCULATIONS
     # ------------------------------
 
     total_files = (
@@ -211,16 +228,43 @@ else:
         duplicate_size / (1024 * 1024)
     )
 
+    # ------------------------------
+    # SCAN RESULT
+    # ------------------------------
+
     print("\n==============================")
     print("       SCAN RESULT")
     print("==============================")
 
-    print("Files scanned:", total_files)
-    print("Images:", image_count)
-    print("Videos:", video_count)
-    print("Documents:", document_count)
-    print("Python files:", python_count)
-    print("Other files:", other_count)
+    print(
+        "Files scanned:",
+        total_files
+    )
+
+    print(
+        "Images:",
+        image_count
+    )
+
+    print(
+        "Videos:",
+        video_count
+    )
+
+    print(
+        "Documents:",
+        document_count
+    )
+
+    print(
+        "Python files:",
+        python_count
+    )
+
+    print(
+        "Other files:",
+        other_count
+    )
 
     print(
         "\nTotal size:",
@@ -243,7 +287,10 @@ else:
 
     print(
         "Duplicate storage:",
-        round(duplicate_size_mb, 2),
+        round(
+            duplicate_size_mb,
+            2
+        ),
         "MB"
     )
 
@@ -257,7 +304,10 @@ else:
 
     for size, path in largest_files[:10]:
 
-        print("\nFile:", os.path.basename(path))
+        print(
+            "\nFile:",
+            os.path.basename(path)
+        )
 
         print(
             "Size:",
@@ -268,7 +318,10 @@ else:
             "MB"
         )
 
-        print("Path:", path)
+        print(
+            "Path:",
+            path
+        )
 
     # ------------------------------
     # OLD FILES
@@ -285,7 +338,10 @@ else:
 
     for modified_date, size, path in old_files[:10]:
 
-        print("\nFile:", os.path.basename(path))
+        print(
+            "\nFile:",
+            os.path.basename(path)
+        )
 
         print(
             "Last modified:",
@@ -303,7 +359,188 @@ else:
             "MB"
         )
 
-        print("Path:", path)
+        print(
+            "Path:",
+            path
+        )
+
+    # ------------------------------
+    # DAY 4: STORAGE ANALYSIS
+    # ------------------------------
+
+    categories = {
+        "Images": image_size,
+        "Videos": video_size,
+        "Documents": document_size,
+        "Python": python_size,
+        "Other": other_size
+    }
+
+    print("\n==============================")
+    print("       STORAGE ANALYSIS")
+    print("==============================")
+
+    for category, size in sorted(
+        categories.items(),
+        key=lambda x: x[1],
+        reverse=True
+    ):
+
+        if total_size > 0:
+            percentage = (
+                size / total_size
+            ) * 100
+        else:
+            percentage = 0
+
+        print(
+            category + ":",
+            round(
+                size / (1024 * 1024),
+                2
+            ),
+            "MB",
+            "(",
+            round(percentage, 2),
+            "%)"
+        )
+
+    # ------------------------------
+    # DAY 4: SMART ANALYSIS
+    # ------------------------------
+
+    print("\n==============================")
+    print("       SMART ANALYSIS")
+    print("==============================")
+
+    largest_category = max(
+        categories,
+        key=categories.get
+    )
+
+    print(
+        "Largest storage category:",
+        largest_category
+    )
+
+    print(
+        "Storage used by it:",
+        round(
+            categories[largest_category]
+            / (1024 * 1024),
+            2
+        ),
+        "MB"
+    )
+
+    # ------------------------------
+    # DAY 4: RECOMMENDATION
+    # ------------------------------
+
+    print("\n==============================")
+    print("     STORAGE RECOMMENDATION")
+    print("==============================")
+
+    if duplicate_size > 0:
+
+        print(
+            "Recommendation:"
+        )
+
+        print(
+            "Review duplicate files first."
+        )
+
+        print(
+            "Potential duplicate storage:",
+            round(
+                duplicate_size_mb,
+                2
+            ),
+            "MB"
+        )
+
+    elif largest_category == "Videos":
+
+        print(
+            "Recommendation:"
+        )
+
+        print(
+            "Review large video files first."
+        )
+
+    elif largest_category == "Images":
+
+        print(
+            "Recommendation:"
+        )
+
+        print(
+            "Review old and large images."
+        )
+
+    elif largest_category == "Documents":
+
+        print(
+            "Recommendation:"
+        )
+
+        print(
+            "Review old documents and unused files."
+        )
+
+    else:
+
+        print(
+            "Recommendation:"
+        )
+
+        print(
+            "Review your largest files first."
+        )
+
+    # ------------------------------
+    # DAY 4: CLEANUP CANDIDATES
+    # ------------------------------
+
+    print("\n==============================")
+    print("      CLEANUP CANDIDATES")
+    print("==============================")
+
+    if duplicate_count > 0:
+
+        print(
+            "1. Duplicate files:",
+            duplicate_count
+        )
+
+    if len(largest_files) > 0:
+
+        largest_size = (
+            largest_files[0][0]
+            / (1024 * 1024)
+        )
+
+        print(
+            "2. Largest file:",
+            os.path.basename(
+                largest_files[0][1]
+            ),
+            "-",
+            round(
+                largest_size,
+                2
+            ),
+            "MB"
+        )
+
+    if len(old_files) > 0:
+
+        print(
+            "3. Old files:",
+            len(old_files)
+        )
 
     # ------------------------------
     # COMPLETED
